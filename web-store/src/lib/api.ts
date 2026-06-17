@@ -7,11 +7,16 @@ const apiUrl = process.env.BACKEND_URL!
 
 export const fetchProducts = async () => {
   try {
-    const response = await axios.get(`${apiUrl}/products`)
+    // Agora os produtos são gerados de forma estática pelo nosso robô e salvos em public/products.json
+    // Ao invés de usar axios para um backend que não existe, vamos fazer um fetch local
+    // Caso estejamos no cliente (navegador), pegamos direto da rota estática.
+    // Usamos window.location.origin para garantir a rota absoluta, ou pegamos relativo
+    const url = typeof window !== 'undefined' ? '/products.json' : 'http://localhost:3000/products.json'
+    const response = await axios.get(url)
     return response.data
   } catch (error:any) {
-    console.error("Erro ao obter produtos:", error.message)
-    throw error // Você pode tratar o erro de outra maneira, se preferir.
+    console.error("Erro ao obter produtos estáticos:", error.message)
+    return [] // Retorna array vazio se não houver produtos ainda
   }
 }
 
@@ -256,14 +261,13 @@ export const getUser = async (
 
 export const getAllStoreConfigs = async () => {
   try {
-    const response = await axios.get(`${apiUrl}/store`)
-    const storeConfigs = response.data
-    if (storeConfigs.length > 0) {
-      return storeConfigs
-    } else {
-      console.warn("A lista de configurações da loja está vazia.")
-      return null // Ou outra lógica apropriada para lidar com a lista vazia
-    }
+    // Mocking a resposta da API para permitir que o frontend renderize sem um backend ativo
+    return [{
+      id: "store-01",
+      name: "Minha Loja de Afiliados",
+      description: "As melhores ofertas selecionadas por IA",
+      themeColor: "#FF5722"
+    }]
   } catch (error:any) {
     console.error("Erro ao obter configurações da loja:", error.message)
     throw error
